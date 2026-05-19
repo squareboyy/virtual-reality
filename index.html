@@ -1,0 +1,173 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>VR</title>
+    <link rel="stylesheet" href="style.css" />
+
+    <script src="./Utils/trackball-rotator.js"></script>
+    <script src="./Utils/m4.js"></script>
+    <script src="./TextureHandler.js"></script>
+    <script src="./StereoCamera.js"></script>
+    <script src="./shader.gpu"></script>
+    <script src="./model.js"></script>
+    <script src="./main.js"></script>
+  </head>
+  <body onload="init()">
+    <div id="controls">
+      <h2>Surface settings</h2>
+
+      <div class="control-group">
+        <label
+          style="display: inline-flex; align-items: center; cursor: pointer"
+        >
+          <input
+            type="checkbox"
+            id="chkTextures"
+            checked
+            style="width: 20px; height: 20px; margin-right: 10px"
+          />
+          Show Textures
+        </label>
+      </div>
+
+      <div class="control-group">
+        <label
+          style="display: inline-flex; align-items: center; cursor: pointer"
+        >
+          <input
+            type="checkbox"
+            id="chkLighting"
+            checked
+            style="width: 20px; height: 20px; margin-right: 10px"
+          />
+          Enable Lighting
+        </label>
+      </div>
+
+      <div class="control-group">
+        <label
+          style="display: inline-flex; align-items: center; cursor: pointer"
+        >
+          <input
+            type="checkbox"
+            id="chkWebcam"
+            checked
+            style="width: 20px; height: 20px; margin-right: 10px"
+          />
+          Show Webcam Background
+        </label>
+      </div>
+
+      <div class="control-group">
+        <label for="paramR1">R1:</label>
+        <input
+          type="range"
+          id="paramR1"
+          min="0.1"
+          max="5"
+          step="0.1"
+          value="1.0"
+        />
+      </div>
+
+      <div class="control-group">
+        <label for="paramR2">R2:</label>
+        <input
+          type="range"
+          id="paramR2"
+          min="0.1"
+          max="5"
+          step="0.1"
+          value="2.0"
+        />
+      </div>
+
+      <div class="control-group">
+        <label for="paramFi">Angle fi:</label>
+        <select id="paramFi" style="width: 100%">
+          <option value="pi/6">π/6</option>
+          <option value="-pi/6">-π/6</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="paramResU">Granularity U:</label>
+        <input
+          type="range"
+          id="paramResU"
+          min="5"
+          max="100"
+          step="1"
+          value="30"
+        />
+      </div>
+
+      <div class="control-group">
+        <label for="paramResV">Granularity V:</label>
+        <input
+          type="range"
+          id="paramResV"
+          min="5"
+          max="100"
+          step="1"
+          value="30"
+        />
+      </div>
+
+      <h2>Stereo settings</h2>
+
+      <div class="control-group">
+        <label for="paramEyeSep">Eye Separation:</label>
+        <input
+          type="range"
+          id="paramEyeSep"
+          min="0.0"
+          max="2.0"
+          step="0.05"
+          value="0.7"
+        />
+      </div>
+
+      <div class="control-group">
+        <label for="paramConvergence">Convergence:</label>
+        <input
+          type="range"
+          id="paramConvergence"
+          min="5.0"
+          max="50.0"
+          step="1.0"
+          value="14.0"
+        />
+      </div>
+
+      <div class="control-group">
+        <label for="paramFOV">FOV (radians):</label>
+        <input
+          type="range"
+          id="paramFOV"
+          min="0.1"
+          max="3.0"
+          step="0.05"
+          value="0.8"
+        />
+      </div>
+
+      <div class="control-group">
+        <label for="paramNearClip">Near Clipping:</label>
+        <input
+          type="range"
+          id="paramNearClip"
+          min="1.0"
+          max="20.0"
+          step="0.5"
+          value="8.0"
+        />
+      </div>
+    </div>
+
+    <div id="canvas-holder">
+      <canvas id="webglcanvas"></canvas>
+    </div>
+  </body>
+</html>

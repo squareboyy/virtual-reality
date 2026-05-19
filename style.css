@@ -1,0 +1,78 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    margin: 0;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#controls {
+    width: 300px;
+    padding: 20px;
+    background-color: #2a2a2a;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
+    z-index: 10;
+}
+
+#controls h2 {
+    margin-top: 0;
+    color: #ffffff;
+    border-bottom: 2px solid #444;
+    padding-bottom: 10px;
+}
+
+#controls .control-group {
+    margin-bottom: 20px;
+}
+
+#controls label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+#controls input[type="color"] {
+    width: 100%;
+    height: 40px;
+    border: none;
+    padding: 0;
+    background: none;
+    cursor: pointer;
+}
+
+#controls input[type="range"] {
+    width: 100%;
+    cursor: pointer;
+}
+
+#controls input[type="number"] {
+    width: 60px;
+    background: #1a1a1a;
+    color: #e0e0e0;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+#controls .slider-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#canvas-holder {
+    flex-grow: 1;
+    display: flex;
+    overflow: hidden;
+    background-color: #121212;
+}
+
+canvas {
+    background-color: #000000;
+    width: 100%;
+    height: 100%;
+    display: block;
+}

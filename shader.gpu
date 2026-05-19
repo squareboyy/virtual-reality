@@ -1,0 +1,104 @@
+// Vertex shader
+const vertexShaderSource = `
+attribute vec3 vertex;
+attribute vec3 normal;
+attribute vec3 tangent;
+attribute vec2 texCoord;
+
+uniform mat4 ModelViewProjectionMatrix;
+uniform mat4 ModelViewMatrix;
+uniform mat4 NormalMatrix;
+uniform vec3 LightPosition;
+
+uniform bool uIsBackground; // Режим малювання вебкамери
+
+varying vec3 vPos;
+varying vec3 vLightPos;
+varying vec2 vTexCoord;
+varying mat3 vTBN;
+
+void main() {
+    if (uIsBackground) {
+        vTexCoord = texCoord;
+        gl_Position = ModelViewProjectionMatrix * vec4(vertex, 1.0);
+        return;
+    }
+
+    vec4 pos4 = ModelViewMatrix * vec4(vertex, 1.0);
+    vPos = pos4.xyz;
+    vTexCoord = texCoord;
+    vLightPos = LightPosition;
+
+    vec3 N = normalize((NormalMatrix * vec4(normal, 0.0)).xyz);
+    vec3 T = normalize((NormalMatrix * vec4(tangent, 0.0)).xyz);
+    T = normalize(T - N * dot(T, N));
+    vec3 B = cross(N, T);
+    vTBN = mat3(T, B, N);
+
+    gl_Position = ModelViewProjectionMatrix * vec4(vertex, 1.0);
+}`;
+
+// Fragment shader
+const fragmentShaderSource = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+   precision highp float;
+#else
+   precision mediump float;
+#endif
+
+uniform sampler2D iTMU0; // Diffuse Texture / Кадр вебкамери
+uniform sampler2D iTMU1; // Specular Texture
+uniform sampler2D iTMU2; // Normal Map
+uniform float Shininess;
+uniform vec3 AmbientProduct;
+uniform vec3 DiffuseProduct;
+uniform vec3 SpecularProduct;
+
+uniform bool uUseDiffuse;
+uniform bool uUseSpecular;
+uniform bool uUseNormal;
+uniform bool uIsBackground;
+uniform bool uEnableLighting;
+
+varying vec3 vPos;
+varying vec3 vLightPos;
+varying vec2 vTexCoord;
+varying mat3 vTBN;
+
+void main() {
+    if (uIsBackground) {
+        gl_FragColor = texture2D(iTMU0, vTexCoord);
+        return;
+    }
+
+    vec3 N;
+    if (uUseNormal) {
+        vec3 normalMap = texture2D(iTMU2, vTexCoord).rgb;
+        normalMap = normalize(normalMap * 2.0 - 1.0);
+        N = normalize(vTBN * normalMap);
+    } else {
+        N = normalize(vTBN * vec3(0.0, 0.0, 1.0));
+    }
+
+    vec4 texDiffuse = uUseDiffuse ? texture2D(iTMU0, vTexCoord) : vec4(1.0);
+    
+    // Якщо світло вимкнено — рендеримо лише чисту текстуру
+    if (!uEnableLighting) {
+        gl_FragColor = vec4(texDiffuse.rgb, 1.0);
+        return;
+    }
+
+    vec3 L = normalize(vLightPos - vPos);
+    vec3 E = normalize(-vPos);
+    vec3 H = normalize(L + E);
+
+    vec4 texSpecular = uUseSpecular ? texture2D(iTMU1, vTexCoord) : vec4(1.0);
+
+    vec3 ambient = AmbientProduct * texDiffuse.rgb;
+    float Kd = max(dot(L, N), 0.0);
+    vec3 diffuse = Kd * DiffuseProduct * texDiffuse.rgb;
+    float Ks = pow(max(dot(N, H), 0.0), Shininess);
+    vec3 specular = Ks * SpecularProduct * texSpecular.rgb;
+
+    gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
+}`;
