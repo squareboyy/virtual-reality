@@ -15,6 +15,8 @@ let lightAngle = 0;
 let g_useTextures = true;
 let g_enableLighting = true;
 let g_showWebcam = true;
+let g_usePhoneRotation = true;
+let sensorRotationMatrix = m4.identity();
 
 let g_surfaceParams = {
     R1: 1.0, R2: 2.0, fi: Math.PI / 6, u_steps: 30, v_steps: 30
@@ -90,7 +92,7 @@ function draw() {
 
     gl.clear(gl.DEPTH_BUFFER_BIT);
 
-    let modelView = spaceball.getViewMatrix(); 
+    let trackballView = spaceball.getViewMatrix(); 
     lightAngle += 0.01; 
     let lightRadius = 7.5;
     let lightPosWorld = [lightRadius * Math.sin(lightAngle), 7.5, lightRadius * Math.cos(lightAngle)];
@@ -110,6 +112,9 @@ function draw() {
 
     let useState = g_useTextures ? 1 : 0;
     
+    // Поєднуємо обертання трекболу миші та компасу смартфона
+    let modelView = m4.multiply(trackballView, sensorRotationMatrix);
+
     function drawSceneForEye(frustumMat, transMat) {
         let mv = m4.multiply(transMat, modelView);
         let mvp = m4.multiply(frustumMat, mv);
@@ -297,6 +302,14 @@ function init() {
     document.getElementById("chkTextures").addEventListener("change", e => g_useTextures = e.target.checked);
     document.getElementById("chkLighting").addEventListener("change", e => g_enableLighting = e.target.checked);
     document.getElementById("chkWebcam").addEventListener("change", e => g_showWebcam = e.target.checked);
+    
+    // Прослуховувач для увімкнення/вимкнення сенсора
+    document.getElementById("chkPhoneRotation").addEventListener("change", e => {
+        g_usePhoneRotation = e.target.checked;
+        if (!g_usePhoneRotation) {
+            sensorRotationMatrix = m4.identity(); // Скидання матриці в одиничну
+        }
+    });
 
     function setupSlider(id, targetObj, paramKey, callback) {
         let el = document.getElementById(id);
@@ -324,6 +337,17 @@ function init() {
     setupSlider("paramConvergence", g_stereoParams, "convergence", updateStereoCamera);
     setupSlider("paramFOV", g_stereoParams, "fov", updateStereoCamera);
     setupSlider("paramNearClip", g_stereoParams, "nearClip", updateStereoCamera);
+
+    // Ініціалізація WebSocket-клієнта мікросервісу
+    const ws = new WebSocket(`ws://${window.location.hostname}:8000`);
+    ws.onmessage = (event) => {
+        if (!g_usePhoneRotation) return; // Ігноруємо дані, якщо вимкнено
+        const mag = JSON.parse(event.data);
+        if (mag && mag.x !== undefined && mag.y !== undefined) {
+            let heading = Math.atan2(mag.x, mag.y);
+            sensorRotationMatrix = m4.yRotation(heading); // Обертання по осі компаса (Y)
+        }
+    };
 
     draw();
 }

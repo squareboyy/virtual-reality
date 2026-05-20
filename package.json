@@ -1,0 +1,25 @@
+{
+  "name": "virtual_reality_project",
+  "version": "1.0.0",
+  "description": "**Author:** TR-51mp Holovatyi Nikita",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/squareboyy/virtual-reality.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/squareboyy/virtual-reality/issues"
+  },
+  "homepage": "https://github.com/squareboyy/virtual-reality#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "ws": "^8.20.1"
+  }
+}
