@@ -16,6 +16,9 @@ let g_useTextures = true;
 let g_enableLighting = true;
 let g_showWebcam = true;
 let g_usePhoneRotation = true;
+
+let targetHeading = 0;  // Кут, який прийшов від телефону
+let currentHeading = 0; // Поточний кут моделі (для плавного переходу)
 let sensorRotationMatrix = m4.identity();
 
 let g_surfaceParams = {
@@ -112,6 +115,17 @@ function draw() {
 
     let useState = g_useTextures ? 1 : 0;
     
+    // Плавна інтерполяція (згладжування).
+    if (g_usePhoneRotation) {
+        // Обробка переходу через 360 градусів (Math.PI / -Math.PI)
+        let diff = targetHeading - currentHeading;
+        while (diff > Math.PI) diff -= Math.PI * 2;
+        while (diff < -Math.PI) diff += Math.PI * 2;
+        
+        currentHeading += diff * 0.1;
+        sensorRotationMatrix = m4.yRotation(currentHeading);
+    }
+
     // Поєднуємо обертання трекболу миші та компасу смартфона
     let modelView = m4.multiply(trackballView, sensorRotationMatrix);
 
@@ -341,11 +355,10 @@ function init() {
     // Ініціалізація WebSocket-клієнта мікросервісу
     const ws = new WebSocket(`ws://${window.location.hostname}:8000`);
     ws.onmessage = (event) => {
-        if (!g_usePhoneRotation) return; // Ігноруємо дані, якщо вимкнено
+        if (!g_usePhoneRotation) return;
         const mag = JSON.parse(event.data);
         if (mag && mag.x !== undefined && mag.y !== undefined) {
-            let heading = Math.atan2(mag.x, mag.y);
-            sensorRotationMatrix = m4.yRotation(heading); // Обертання по осі компаса (Y)
+            targetHeading = Math.atan2(mag.x, mag.y);
         }
     };
 
