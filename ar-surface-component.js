@@ -39,7 +39,8 @@ AFRAME.registerComponent('my-surface', {
         geometry.scale(scaleFactor, scaleFactor, scaleFactor);
 
         const material = new THREE.MeshPhongMaterial({
-            color: 0x00FF00,
+            color: 0xFF0000,
+            // lime: color: 0x00FF00,
             wireframe: true, // Відображаємо у вигляді каркасу
             side: THREE.DoubleSide,
             transparent: true,
