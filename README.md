@@ -1,5 +1,5 @@
 # Methods of synthesis of virtual reality
 
-## Author: Holovatyi Nikita
+**Author:** TR-51mp Holovatyi Nikita
 
-## Group: TR-51mp
+**My website:** https://squareboyy.github.io/virtual-reality

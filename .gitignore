@@ -1,0 +1,17 @@
+# Залежності Node.js
+node_modules/
+
+# Логи пакетних менеджерів
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Файли середовища
+.env
+
+# Системні файли macOS та Windows
+.DS_Store
+Thumbs.db
+
+# Локальні налаштування редактора VS Code
+.vscode/
